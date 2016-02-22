@@ -1,0 +1,21 @@
+[user]
+	name = Joe Rozner
+	email = joe@deadbytes.net
+[color]
+	ui = auto
+	branch = auto
+	diff = auto
+	interactive = auto
+	status = auto
+[alias]
+	lol = log --graph --decorate --pretty=oneline --abbrev-commit
+	loe = log --graph --decorate --pretty=oneline --abbrev-commit -10
+	hist = log --pretty=format:"%h %ad | %s%d [%an]" --graph --date=short
+[push]
+	default = simple
+[grep]
+	lineNumber = true
+[branch]
+	autosetuprebase = always
+[merge]
+	ff = only
