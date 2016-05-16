@@ -30,7 +30,7 @@ export GOPATH=$HOME
 if [[ -x /usr/libexec/path_helper ]]; then
   PATH=""
   eval $(/usr/libexec/path_helper -s)
-  export PATH="$HOME/bin:$GOPATH/bin:$HOME/.rbenv/bin:/usr/local/bin:/usr/local/sbin:$PATH"
+  export PATH="$HOME/bin:$GOPATH/bin:$HOME/.cargo/bin:$HOME/.rbenv/bin:/usr/local/bin:/usr/local/sbin:$PATH"
 fi
 
 if [[ $(uname) == 'Darwin' ]]; then

@@ -8,7 +8,6 @@ Plugin 'gmarik/Vundle.vim'
 Plugin 'tpope/vim-fugitive'
 Plugin 'tpope/vim-rails'
 Plugin 'tpope/vim-haml'
-Plugin 'mattn/gist-vim'
 Plugin 'pangloss/vim-javascript'
 Plugin 'kchmck/vim-coffee-script'
 Plugin 'vim-ruby/vim-ruby'
@@ -56,7 +55,7 @@ if has("autocmd")
   au FileType go nmap <Leader>e <Plug>(go-rename)
 endif
 
-let mapleader = "\\"
+let mapleader = "\ "
 
 nmap <silent><leader>b :Gblame<CR>
 nmap <silent><leader>ct :TagbarToggle<CR>
@@ -93,7 +92,6 @@ set nobackup
 set backspace=eol,start,indent
 set ai
 set si
-set cindent
 set modelines=0 "disable the use of modelines
 set encoding=utf-8
 set ttyfast
@@ -103,7 +101,6 @@ set iskeyword+=_
 " Autocomplete
 set ofu=syntaxcomplete#Complete "Enable syntax completion
 set completeopt-=preview
-let g:SuperTabDefaultCompletionType = "context"
 
 " Spell Checking
 set spelllang=en_us
@@ -117,10 +114,6 @@ nmap <silent> <leader>l :set list!<CR>
 " Line Wrapping
 set wrap
 set linebreak
-
-"NERDTree
-map <F2> :NERDTreeToggle<CR>
-let NERDTreeIgnore=['.vim$', '\~$']
 
 " wildmenu
 set wildmenu
