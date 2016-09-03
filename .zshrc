@@ -27,6 +27,9 @@ setopt share_history
 export LC_CTYPE=en_US.UTF-8
 export EDITOR=vim
 export GOPATH=$HOME
+export RUST_SRC_PATH="$(rustc --print sysroot)/lib/rustlib/src/rust/src"
+export CARGO_HOME=$HOME/.cargo
+
 if [[ -x /usr/libexec/path_helper ]]; then
   PATH=""
   eval $(/usr/libexec/path_helper -s)

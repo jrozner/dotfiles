@@ -21,7 +21,7 @@ Plugin 'Valloric/YouCompleteMe'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'rust-lang/rust.vim'
 Plugin 'altercation/vim-colors-solarized'
-
+Plugin 'racer-rust/vim-racer'
 call vundle#end()
 
 " Auto Commands
@@ -53,6 +53,9 @@ if has("autocmd")
   au FileType go nmap <Leader>dv <Plug>(go-def-vertical)
   au FileType go nmap <Leader>dt <Plug>(go-def-tab)
   au FileType go nmap <Leader>e <Plug>(go-rename)
+
+  let g:rustfmt_autosave = 1
+  let g:racer_experimental_completer = 1
 endif
 
 let mapleader = "\ "
