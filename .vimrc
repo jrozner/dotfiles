@@ -1,28 +1,38 @@
-set nocompatible
-filetype off
+if &compatible
+  set nocompatible
+endif
 
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
+set runtimepath+=/Users/joe/.vim/repos/github.com/Shougo/dein.vim
 
-Plugin 'gmarik/Vundle.vim'
-Plugin 'tpope/vim-fugitive'
-Plugin 'tpope/vim-rails'
-Plugin 'tpope/vim-haml'
-Plugin 'pangloss/vim-javascript'
-Plugin 'kchmck/vim-coffee-script'
-Plugin 'vim-ruby/vim-ruby'
-Plugin 'elzr/vim-json'
-Plugin 'fatih/vim-go'
-Plugin 'jrozner/vim-antlr'
-Plugin 'hail2u/vim-css3-syntax'
-Plugin 'ap/vim-css-color'
-Plugin 'majutsushi/tagbar'
-Plugin 'Valloric/YouCompleteMe'
-Plugin 'airblade/vim-gitgutter'
-Plugin 'rust-lang/rust.vim'
-Plugin 'altercation/vim-colors-solarized'
-Plugin 'racer-rust/vim-racer'
-call vundle#end()
+call dein#begin('/Users/joe/.vim')
+
+call dein#add('Shougo/dein.vim')
+call dein#add('Shougo/deoplete.nvim')
+call dein#add('zchee/deoplete-go')
+call dein#add('jreybert/vimagit')
+call dein#add('tpope/vim-rails')
+call dein#add('tpope/vim-haml')
+call dein#add('pangloss/vim-javascript')
+call dein#add('kchmck/vim-coffee-script')
+call dein#add('vim-ruby/vim-ruby')
+call dein#add('elzr/vim-json')
+call dein#add('fatih/vim-go')
+call dein#add('nsf/gocode')
+call dein#add('jrozner/vim-antlr')
+call dein#add('hail2u/vim-css3-syntax')
+call dein#add('ap/vim-css-color')
+call dein#add('majutsushi/tagbar')
+call dein#add('airblade/vim-gitgutter')
+call dein#add('rust-lang/rust.vim')
+call dein#add('altercation/vim-colors-solarized')
+call dein#add('racer-rust/vim-racer')
+
+call dein#end()
+
+" If you want to install not installed plugins on startup.
+if dein#check_install()
+  call dein#install()
+endif
 
 " Auto Commands
 if has("autocmd")
@@ -56,11 +66,19 @@ if has("autocmd")
 
   let g:rustfmt_autosave = 1
   let g:racer_experimental_completer = 1
+
+  let g:deoplete#enable_at_startup = 1
 endif
 
 let mapleader = "\ "
 
-nmap <silent><leader>b :Gblame<CR>
+nmap <silent><leader>bn :bn<CR>
+nmap <silent><leader>bp :bp<CR>
+nmap <silent><leader>bl :ls<CR>
+nmap <silent><leader>bb :ls<CR>:b
+nmap <leader>bo :badd<space>
+
+"nmap <silent><leader>b :Gblame<CR>
 nmap <silent><leader>ct :TagbarToggle<CR>
 
 " Tabbing

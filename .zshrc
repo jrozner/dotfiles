@@ -24,17 +24,18 @@ setopt hist_verify
 setopt inc_append_history
 setopt share_history
 
-export LC_CTYPE=en_US.UTF-8
-export EDITOR=vim
-export GOPATH=$HOME
-export RUST_SRC_PATH="$(rustc --print sysroot)/lib/rustlib/src/rust/src"
-export CARGO_HOME=$HOME/.cargo
-
 if [[ -x /usr/libexec/path_helper ]]; then
   PATH=""
   eval $(/usr/libexec/path_helper -s)
   export PATH="$HOME/bin:$GOPATH/bin:$HOME/.cargo/bin:$HOME/.rbenv/bin:/usr/local/bin:/usr/local/sbin:$PATH"
 fi
+
+export LC_CTYPE=en_US.UTF-8
+export EDITOR=nvim
+export GOPATH=$HOME
+export RUST_SRC_PATH="$(rustc --print sysroot)/lib/rustlib/src/rust/src"
+export CARGO_HOME=$HOME/.cargo
+
 
 if [[ $(uname) == 'Darwin' ]]; then
   export JAVA_HOME=$(/usr/libexec/java_home)
@@ -50,6 +51,7 @@ fi
 alias grep='grep --color=auto'
 alias termcover="go tool cover -func=c.out && rm c.out"
 alias heatcover="go tool cover -html=c.out && rm c.out"
+alias vim=nvim
 
 function git_prompt_info() {
   ref=$(git symbolic-ref HEAD 2> /dev/null) || return
