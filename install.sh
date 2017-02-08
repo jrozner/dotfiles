@@ -1,8 +1,8 @@
 #!/bin/bash
 
-for f in ".gdbinit .gemrc .gitconfig .irbrc .msfconsole.rc .radare2rc .tmux.conf .vimrc .zshrc"
+for f in ".gdbinit .gemrc .gitconfig .irbrc .msfconsole.rc .radare2rc .tmux.conf .vimrc .zshrc .irssi"
 do
-  cp $HOME/dotfiles/$f $HOME
+  cp -r $HOME/dotfiles/$f $HOME
 done
 
 if [ ! -d $HOME/.vim/bundle ]; then
