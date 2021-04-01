@@ -54,10 +54,6 @@ set ttyfast
 set clipboard=unnamed
 set iskeyword+=_
 
-" Autocomplete
-set ofu=syntaxcomplete#Complete "Enable syntax completion
-set completeopt-=preview
-
 " Spell Checking
 set spelllang=en_us
 nmap <silent> <leader>s :set spell!<CR>
