@@ -34,15 +34,15 @@ export LC_CTYPE=en_US.UTF-8
 export GOPATH=$HOME
 
 # use neovim if we have it
-if [[ type -p nvim ]]; then
+if [[ $(type -p nvim) ]]; then
   export EDITOR=nvim
   alias vim=nvim
-elif
+else
   export EDITOR=vim
 fi
 
 if [[ $(uname) == 'Darwin' ]]; then
-  export JAVA_HOME=$(/usr/libexec/java_home)
+  #export JAVA_HOME=$(/usr/libexec/java_home)
   export LSCOLORS=gxfxbEaEBxxEhEhBaDaCaD
   export HOMEBREW_NO_ENV_HINTS=1
   export HOMEBREW_NO_ANALYTICS=1
