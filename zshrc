@@ -31,16 +31,23 @@ if [[ -x /usr/libexec/path_helper ]]; then
 fi
 
 export LC_CTYPE=en_US.UTF-8
-export EDITOR=nvim
 export GOPATH=$HOME
-export RUST_SRC_PATH="$(rustc --print sysroot)/lib/rustlib/src/rust/src"
-export CARGO_HOME=$HOME/.cargo
 
+# use neovim if we have it
+if [[ type -p nvim ]]; then
+  export EDITOR=nvim
+  alias vim=nvim
+elif
+  export EDITOR=vim
+fi
 
 if [[ $(uname) == 'Darwin' ]]; then
   export JAVA_HOME=$(/usr/libexec/java_home)
   export LSCOLORS=gxfxbEaEBxxEhEhBaDaCaD
+  export HOMEBREW_NO_ENV_HINTS=1
+  export HOMEBREW_NO_ANALYTICS=1
   alias ls='ls -G'
+  eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
 if [[ $(uname) == 'Linux' ]]; then
@@ -51,7 +58,6 @@ fi
 alias grep='grep --color=auto'
 alias termcover="go tool cover -func=c.out && rm c.out"
 alias heatcover="go tool cover -html=c.out && rm c.out"
-alias vim=nvim
 
 function git_prompt_info() {
   ref=$(git symbolic-ref HEAD 2> /dev/null) || return
@@ -105,6 +111,6 @@ if [ -d $HOME/.rbenv ]; then
   eval "$(rbenv init -)"
 fi
 
-if [ -f $HOME/.zsh_local ]; then
-  source $HOME/.zsh_local
+if [ -f $HOME/.zshrc.local ]; then
+  source $HOME/.zshrc.local
 fi
