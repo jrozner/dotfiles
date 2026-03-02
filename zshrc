@@ -27,8 +27,9 @@ setopt share_history
 if [[ -x /usr/libexec/path_helper ]]; then
   PATH=""
   eval $(/usr/libexec/path_helper -s)
-  export PATH="$HOME/bin:$GOPATH/bin:$HOME/.cargo/bin:$HOME/.rbenv/bin:/usr/local/bin:/usr/local/sbin:$PATH"
 fi
+
+export PATH="$HOME/bin:$GOPATH/bin:$HOME/.cargo/bin:$HOME/.rbenv/bin:/usr/local/bin:/usr/local/sbin:$PATH"
 
 export LC_CTYPE=en_US.UTF-8
 export GOPATH=$HOME
