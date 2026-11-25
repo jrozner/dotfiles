@@ -1,6 +1,14 @@
+" Shared config for Neovim and Vim. Settings that are already Neovim
+" defaults are kept when Vim (especially older versions) needs them.
+
 if &compatible
   set nocompatible
 endif
+
+" Must be set before anything that depends on multibyte handling.
+" Neovim is always utf-8; Vim otherwise follows the locale.
+set encoding=utf-8
+scriptencoding utf-8
 
 " Auto Commands
 if has("autocmd")
@@ -8,60 +16,78 @@ if has("autocmd")
   filetype plugin indent on
 endif
 
-let mapleader = "\ "
+if has('eval')
+  let mapleader = "\<Space>"
+endif
 
-nmap <silent><leader>bn :bn<CR>
-nmap <silent><leader>bp :bp<CR>
-nmap <silent><leader>bl :ls<CR>
-nmap <silent><leader>bb :ls<CR>:b
-nmap <leader>bo :badd<space>
+nnoremap <silent> <leader>bn :bn<CR>
+nnoremap <silent> <leader>bp :bp<CR>
+nnoremap <silent> <leader>bl :ls<CR>
+nnoremap <silent> <leader>bb :ls<CR>:b
+nnoremap <leader>bo :badd<space>
 
 " Tabbing
 set tabstop=2
 set softtabstop=2
 set shiftwidth=2
 set expandtab
-nmap <silent> <leader>t :retab<CR>
+nnoremap <silent> <leader>t :retab<CR>
 
 " Appearance
 set ruler
 set number
 set title
-set termguicolors
-set background=light
-colorscheme solarized8
-syntax enable
-set nocursorline
-set nocursorcolumn
+if has('termguicolors')
+  set termguicolors
+endif
+set background=dark
+
+" Re-apply custom highlights whenever a colorscheme loads. Neovim uses the
+" Whitespace group for tab/trail listchars; Vim uses SpecialKey.
+augroup MyColors
+  autocmd!
+  autocmd ColorScheme * hi StatusLine ctermfg=33 ctermbg=8 guifg=#268bd2 guibg=#002b36
+                    \ | hi SpecialKey ctermfg=red ctermbg=NONE guifg=red guibg=NONE
+                    \ | hi Whitespace ctermfg=red ctermbg=NONE guifg=red guibg=NONE
+augroup END
+
+if has('syntax')
+  syntax enable
+endif
+if has('eval')
+  try
+    colorscheme solarized8
+  catch /^Vim\%((\a\+)\)\=:E185/
+    colorscheme default
+  endtry
+endif
+
 set laststatus=2
-set statusline=%{Mode()}\ %F\ %m%r%w\ %=%{&ff}\ %{&fileencoding?&fileencoding:&encoding}\ %Y\ %p%%\ %l:%v
-hi StatusLine ctermfg=33 ctermbg=8
-hi SpecialKey ctermfg=red ctermbg=none
+if has('eval') && has('statusline')
+  set statusline=%{Mode()}\ %F\ %m%r%w\ %=%{&ff}\ %{&fileencoding?&fileencoding:&encoding}\ %Y\ %p%%\ %l:%v
+endif
 set noshowmode
 
 " Searching
 set hlsearch
-nnoremap <silent> <leader> <space> :noh<CR>
+nnoremap <silent> <leader><space> :noh<CR>
 
 " Misc
-set nobackup
 set backspace=eol,start,indent
-set ai
-set si
+set autoindent
 set modelines=0 "disable the use of modelines
-set encoding=utf-8
-set ttyfast
-set clipboard=unnamed
-set iskeyword+=_
+if has('clipboard')
+  set clipboard=unnamed,unnamedplus
+endif
 
 " Spell Checking
 set spelllang=en_us
-nmap <silent> <leader>s :set spell!<CR>
+nnoremap <silent> <leader>s :set spell!<CR>
 
 " Show Invisibles
 set list
 set listchars=tab:▸\ ,eol:¬,trail:.
-nmap <silent> <leader>l :set list!<CR>
+nnoremap <silent> <leader>l :set list!<CR>
 
 " Line Wrapping
 set wrap
@@ -71,17 +97,29 @@ set linebreak
 set wildmenu
 set wildmode=list:longest,full
 
+" vim.tiny (no +eval) skips everything inside if/endif.
+if has('eval')
+
 " Shamelessly stolen from https://github.com/maciakl/vim-neatstatus/blob/master/after/plugin/neatstatus.vim
 function! Mode()
-  redraw
   let l:mode = mode()
 
-  if     mode ==# "n"  | return "NORMAL"
-  elseif mode ==# "i"  | return "INSERT"
-  elseif mode ==# "R"  | return "REPLACE"
-  elseif mode ==# "v"  | return "VISUAL"
-  elseif mode ==# "V"  | return "V-LINE"
-  elseif mode ==# "" | return "V-BLOCK"
-  else                 | return l:mode
+  if     l:mode ==# "n"  | return "NORMAL"
+  elseif l:mode ==# "i"  | return "INSERT"
+  elseif l:mode ==# "R"  | return "REPLACE"
+  elseif l:mode ==# "v"  | return "VISUAL"
+  elseif l:mode ==# "V"  | return "V-LINE"
+  elseif l:mode ==# "\<C-v>" | return "V-BLOCK"
+  else                   | return l:mode
   endif
 endfunc
+
+" Refresh the statusline on mode changes (replaces the old redraw hack).
+if exists('##ModeChanged')
+  augroup MyStatusline
+    autocmd!
+    autocmd ModeChanged * redrawstatus
+  augroup END
+endif
+
+endif
