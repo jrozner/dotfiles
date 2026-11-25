@@ -1,21 +1,30 @@
 [user]
 	name = Joe Rozner
 	email = joe@deadbytes.net
-[color]
-	ui = auto
-	branch = auto
-	diff = auto
-	interactive = auto
-	status = auto
-[alias]
-	lol = log --graph --decorate --pretty=oneline --abbrev-commit
-	loe = log --graph --decorate --pretty=oneline --abbrev-commit -10
-	hist = log --pretty=format:"%h %ad | %s%d [%an]" --graph --date=short
+[init]
+	defaultBranch = main
+[pull]
+	rebase = true
 [push]
-	default = simple
+	autoSetupRemote = true
+[fetch]
+	prune = true
+[rebase]
+	autoStash = true
+	autoSquash = true
+	updateRefs = true
+[rerere]
+	enabled = true
+[diff]
+	algorithm = histogram
+	colorMoved = default
+[merge]
+	conflictStyle = zdiff3
+[branch]
+	sort = -committerdate
+[tag]
+	sort = version:refname
 [grep]
 	lineNumber = true
-[branch]
-	autosetuprebase = always
-[merge]
-	ff = only
+[help]
+	autocorrect = prompt
