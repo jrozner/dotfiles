@@ -1,93 +1,91 @@
-autoload -U compinit; compinit -i
-autoload colors; colors
+typeset -U path fpath
 
-fpath=(/usr/local/share/zsh-completions $fpath)
+export LC_CTYPE=en_US.UTF-8
+# must assign the path array, not PATH, for typeset -U to dedupe
+path=($HOME/.local/bin $HOME/bin $HOME/go/bin $HOME/.cargo/bin /usr/local/bin /usr/local/sbin $path)
+
+if [[ $OSTYPE == darwin* ]]; then
+  export LSCOLORS=gxfxbEaEBxxEhEhBaDaCaD
+  export HOMEBREW_NO_ENV_HINTS=1
+  export HOMEBREW_NO_ANALYTICS=1
+  alias ls='ls -G'
+  for b in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+    [[ -x $b ]] && { eval "$($b shellenv)"; break }
+  done
+  unset b
+elif [[ $OSTYPE == linux* ]]; then
+  alias ls='ls --color=auto'
+fi
+
+for d in /opt/homebrew/share/zsh-completions /usr/local/share/zsh-completions; do
+  [[ -d $d ]] && fpath=($d $fpath)
+done
+unset d
+
+autoload -U compinit; compinit -i
+autoload -U colors; colors
 
 zstyle ':completion:*' menu select
-setopt completealiases
 
-setopt extendedglob
+setopt interactive_comments
 
-setopt prompt_subst
-autoload promptinit; promptinit
-
-export HISTSIZE=10000
-export SAVEHIDT=10000
-export HISTFILE=$HOME/.zsh_history
-export SAVEHIST=$HISTSIZE
-setopt append_history
+HISTSIZE=12000
+SAVEHIST=10000
+HISTFILE=$HOME/.zsh_history
 setopt extended_history
 setopt hist_expire_dups_first
 setopt hist_ignore_dups
 setopt hist_ignore_space
 setopt hist_verify
-setopt inc_append_history
 setopt share_history
 
-if [[ -x /usr/libexec/path_helper ]]; then
-  PATH=""
-  eval $(/usr/libexec/path_helper -s)
-fi
-
-export PATH="$HOME/bin:$GOPATH/bin:$HOME/.cargo/bin:$HOME/.rbenv/bin:/usr/local/bin:/usr/local/sbin:$PATH"
-
-export LC_CTYPE=en_US.UTF-8
-export GOPATH=$HOME
-
 # use neovim if we have it
-if [[ $(type -p nvim) ]]; then
+if (( $+commands[nvim] )); then
   export EDITOR=nvim
   alias vim=nvim
 else
   export EDITOR=vim
 fi
 
-if [[ $(uname) == 'Darwin' ]]; then
-  #export JAVA_HOME=$(/usr/libexec/java_home)
-  export LSCOLORS=gxfxbEaEBxxEhEhBaDaCaD
-  export HOMEBREW_NO_ENV_HINTS=1
-  export HOMEBREW_NO_ANALYTICS=1
-  alias ls='ls -G'
-  eval "$(/opt/homebrew/bin/brew shellenv)"
-fi
-
-if [[ $(uname) == 'Linux' ]]; then
-  alias ls='ls --color=auto'
-fi
-
 # aliases
 alias grep='grep --color=auto'
-alias termcover="go tool cover -func=c.out && rm c.out"
-alias heatcover="go tool cover -html=c.out && rm c.out"
+ccscratch()    { cd "$(mktemp -d)" && claude "$@" }
+codexscratch() { codex -C "$(mktemp -d)" "$@" }
 
-function git_prompt_info() {
-  ref=$(git symbolic-ref HEAD 2> /dev/null) || return
-  echo "(${ref#refs/heads/})$(parse_git_dirty)"
-}
+autoload -Uz vcs_info
+zstyle ':vcs_info:*' enable git
+zstyle ':vcs_info:git:*' formats '(%b)%m'
+zstyle ':vcs_info:git:*' actionformats '(%b|%a)%m'
+zstyle ':vcs_info:git*+set-message:*' hooks git-dirty
 
-function parse_git_dirty() {
-  if [[ -n $(git status -s --ignore-submodules=dirty 2> /dev/null) ]]; then
-    echo "%{$fg[red]%}✖%{$reset_color%}"
+function +vi-git-dirty() {
+  # escape % in branch names
+  hook_com[branch]=${hook_com[branch]//\%/%%}
+  if [[ -n $(git status --porcelain --ignore-submodules=dirty 2> /dev/null) ]]; then
+    hook_com[misc]="%{$fg[red]%}✖%{$reset_color%}"
   else
-    echo "%{$fg[green]%}✔%{$reset_color%}"
+    hook_com[misc]="%{$fg[green]%}✔%{$reset_color%}"
   fi
 }
 
-function precmd() {
-  PROMPT="%{$fg[red]%}➜ %{$fg[cyan]%}%c%{$fg[blue]%}$(git_prompt_info) %{$fg[green]%}%# %{$reset_color%}"
+function _prompt_precmd() {
+  vcs_info
+  PROMPT="%{$fg[red]%}➜ %{$fg[cyan]%}%c%{$fg[blue]%}${vcs_info_msg_0_} %{$fg[green]%}%# %{$reset_color%}"
 }
+autoload -Uz add-zsh-hook
+add-zsh-hook precmd _prompt_precmd
 
 bindkey -e
-bindkey '\ew' kill-region
-bindkey -s '\el' "ls\n"
-bindkey -s '\e.' "..\n"
-bindkey '^r' history-incremental-search-backward
 bindkey "^[[5~" up-line-or-history
 bindkey "^[[6~" down-line-or-history
 
-# make search up and down work, so partially type and hit up/down to find relevant stuff
-bindkey '^[[A' up-line-or-search
-bindkey '^[[B' down-line-or-search
+# up/down prefix search; ^[OA is what arrows send in application mode (Ubuntu)
+autoload -U up-line-or-beginning-search down-line-or-beginning-search
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+for k in '^[[A' '^[OA'; do bindkey "$k" up-line-or-beginning-search; done
+for k in '^[[B' '^[OB'; do bindkey "$k" down-line-or-beginning-search; done
+unset k
 
 bindkey "^[[H" beginning-of-line
 bindkey "^[[1~" beginning-of-line
@@ -103,15 +101,11 @@ bindkey "^[[1;5D" backward-word
 bindkey '^[[Z' reverse-menu-complete
 
 # Make the delete key (or Fn + Delete on the Mac) work instead of outputting a ~
-bindkey '^?' backward-delete-char
 bindkey "^[[3~" delete-char
-bindkey "^[3;5~" delete-char
-bindkey "\e[3~" delete-char
-
-if [ -d $HOME/.rbenv ]; then
-  eval "$(rbenv init -)"
-fi
 
 if [ -f $HOME/.zshrc.local ]; then
   source $HOME/.zshrc.local
 fi
+
+# re-dedupe after brew shellenv / .zshrc.local
+path=($path)
